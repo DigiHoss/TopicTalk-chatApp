@@ -1,11 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TopicTalk</title>
-</head>
-<body>
-    <p>this is the login page</p>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %} Welcome {% endblock %}
+{% block content %}
+    <h1>Welcome to TopicTalk</h1>
+    <form action="" method="post">
+        <label>Please enter a username</label><br>
+
+    <input type="text"><br>
+
+
+    <label>Choose your interest : </label>
+    <ul class="container">
+        <li class="topic">Games</li>
+        <li class="topic">Programmation</li>
+        <li class="topic">graphic design</li>
+        <li class="topic">sports</li>
+        <li class="topic">education</li>
+        <li class="topic">Everything</li>
+    </ul>
+
+    <input type="submit" value="Start">
+    </form>
+    {% endblock %}
