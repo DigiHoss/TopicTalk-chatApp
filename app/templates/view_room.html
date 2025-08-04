@@ -1,0 +1,142 @@
+{% extends 'base.html'%}
+
+{% block content %}
+<section id="in_room">
+    <p>hello {{ username }}</p>
+    <h2>You are on <mark>{{ room.room_name }}</mark> room</h2>
+    <form method="POST" id="message_input_form">
+        <input type="text" name="message_text" id="message_input" placeholder="Tapez votre message...">
+        <button type="submit" id="send">Send</button>
+
+    </form>
+    <ul id="chat_messages">
+        <div>
+            {% for message in messages %}
+        <li><b>{{ message.sender }} :</b><pre>{{ message.text }}</pre><i>{{ message.created_at }}</i></li>
+        {% endfor %}
+        </div>
+        <button id="load_all_messages_btn" onclick="loadAllMessages()">Load all messages</button>
+    </ul>
+
+    <div id="messages">
+        <!-- Join/leave announcements will appear here -->
+    </div>
+
+    <h3>Members</h3>
+    <ul>
+        {% for member in room_members %}
+        <li>{{ member._id.username }}</li>
+        {% endfor %}
+    </ul>
+    <!-- <button type="button" id="load_older_messages_btn">Load Older Messages</button> -->
+    <!-- <div id="messages">
+        {% for message in messages %}
+        <div><b>{{ message.sender }}&nbsp;[{{ message.created_at }}]:&nbsp;</b> {{ message.text }}</div>
+        {% endfor %}
+    </div>
+
+    <a href="{{ url_for('logout') }}">
+        <button type="button">Logout</button>
+    </a> -->
+    <button onclick="leave_room()"><a href="{{ url_for('room', room_id = room.room_id) }}">GO OUT</a></button>
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+    crossorigin="anonymous"></script>
+
+<script>
+    // Defining all constant varibales
+
+    const socket = io.connect("http://127.0.0.1:5000");
+    socket.on("connect", function () {
+        console.log("Connecté au serveur");
+        socket.emit('join_room', {
+            username: "{{ username }}",
+            room_id: "{{ room._id }}"
+        });
+
+        let message_input = document.getElementById('message_input');
+
+        document.getElementById('message_input_form').onsubmit = function (e) {
+            e.preventDefault();
+            let message = message_input.value.trim();
+            if (message.length) {
+                socket.emit('send_message', {
+                    username: "{{ username }}",
+                    room_id: "{{ room._id }}",
+                    message: message
+                })
+            }
+            message_input.value = '';
+            message_input.focus();
+        }
+    })
+
+    socket.on('receive_message', function (data) {
+        console.log(data);
+        // Only display message if it's for the current room
+        if (data.room_id === "{{ room._id }}") {
+            const ul = document.getElementById('chat_messages')
+            const li = document.createElement('li');
+            
+            // Use data from the received message, not template variables
+            li.innerHTML = `<b>${data.username}:&nbsp;</b><pre>${data.message}</pre><i>${new Date().toLocaleString()}</i>`;
+            ul.appendChild(li);
+            
+            // Auto-scroll to bottom to show new message
+            ul.scrollTop = ul.scrollHeight;
+        }
+    });
+
+    socket.on('join_room_announcement', function (data) {
+        console.log("joined room");
+        if (data.username !== "{{ username }}") {
+            const newNode = document.createElement('div');
+            newNode.innerHTML = `<b>${data.username}</b> has joined the room`;
+            document.getElementById('messages').appendChild(newNode);
+        }
+    });
+    function leave_room() {
+        socket.emit('leave_room', {
+            username: "{{ username }}",
+            room_id: "{{ room._id }}"
+        });
+    }
+
+    socket.on('leave_room_announcement', function (data) {
+        console.log('left room')
+        if (data.room_id === "{{ room._id }}") {
+            const newNode = document.createElement('div');
+            newNode.innerHTML = `<b>${data.username}</b> has left the room`;
+            document.getElementById('messages').appendChild(newNode);
+        }
+    });
+
+    // Function to load all messages for the current room
+    function loadAllMessages() {
+        socket.emit('load_all_messages', {
+            room_id: "{{ room._id }}"
+        });
+    }
+
+    // Handle receiving all messages
+    socket.on('all_messages_loaded', function (data) {
+        if (data.room_id === "{{ room._id }}") {
+            const ul = document.getElementById('chat_messages');
+            // Clear existing messages first
+            ul.innerHTML = '';
+            
+            // Add all messages
+            data.messages.forEach(function(message) {
+                const li = document.createElement('li');
+                li.innerHTML = `<b>${message.sender}:&nbsp;</b><pre>${message.text}</pre><i>${message.created_at}</i>`;
+                ul.appendChild(li);
+            });
+            
+            // Scroll to bottom
+            ul.scrollTop = ul.scrollHeight;
+        }
+    });
+
+</script>
+{% endblock %}

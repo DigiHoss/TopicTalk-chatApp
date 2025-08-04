@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}TopicTalk{% endblock %}
+{% block content %}
+
+
+<section id="starting_section">
+    <header>
+        <h1>Welcome back {{ username }} !</h1>
+    </header>
+    <button><a href="{{ url_for('room') }}">Get started</a></button>
+
+
+</section>
+
+
+
+
+{% endblock %}

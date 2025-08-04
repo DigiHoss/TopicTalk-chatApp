@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+
+
+
+<form action="" method=post>
+    <h2>Create account</h2>
+    {% for category,message in get_flashed_messages(with_categories=true)  %}
+    <div>
+        {{ message }}
+    </div>
+    {% endfor %}
+
+   <div>
+     <label for="username">Username</label>
+    <input type="text" name="username" placeholder="Enter your username">
+   </div>
+
+   <div>
+     <label for="email">Email</label>
+    <input type="email" name="email" placeholder="Enter your email">
+   </div>
+
+   <div>
+     <label for="password">Password</label>
+    <input type="password" name="password" placeholder="New password">
+
+   </div>
+   <div>
+       <label for="confirm_password">Repeat Password</label>
+       <input type="password" name="confirm_password" placeholder="Confirm password">
+
+   </div>
+   <div>
+    <input type="checkbox" name="tos" checked>
+    <label for="tos">Accept tos</label>
+   </div>
+    <input type="submit" value="Register">
+
+    <p>I already have one <a href="{{ url_for('login') }}">Login</a></p>
+
+</form>
+
+{% endblock %}

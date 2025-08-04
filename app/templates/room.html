@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+<section id="starting_section">
+    <div class="content">
+        <h3>Create a Room :</h3>
+
+        <form action="/room" method="POST">
+            <label for="room_name">Enter a Room name</label>
+            <input type="text" name="room_name">
+            <input type="submit" value="Create">
+        </form>
+
+        <h3>Or join room</h3>
+        <ul id="room_list">
+            {% for room in rooms %}
+            <li>
+                <div><b>{{ room.room_name }}</b></div>
+                <a href="{{ url_for('view_room', room_id = room._id) }}">join</a>
+            </li>
+
+            {% endfor %}
+
+        </ul>
+    </div>
+
+</section>
+
+<!-- <script>
+    const ul = document.getElementById('room_list')
+    const li = document.createElement('li');
+    const room = document.createElement('div');
+    room.innerHTML = `<b>${data.room_name}</b><a href=''>join</a>`;
+    li.appendChild(room)
+
+
+</script> -->
+
+
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}login{% endblock %}
+
+
+{% block content %}
+
+
+<form action=""  method=post>
+    <h2>Welcome back !</h2>
+   <div>
+     <label for="username">Username or email</label>
+    <input type="text" name="identifier" placeholder="Enter your username or email">
+   </div>
+
+ 
+   <div>
+     <label for="password">Password</label>
+    <input type="password" name="password" placeholder="set password">
+
+   </div>
+
+   <input type="submit" value="Login">
+  <p>I don't have an acc <a href="{{ url_for('register') }}">Register</a></p>
+  <P>I have forgot my password, <a href="{{ url_for('forgot_password')}}">recover it</a></P>
+
+</form>
+
+
+
+
+
+{% endblock %}
